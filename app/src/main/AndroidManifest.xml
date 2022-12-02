@@ -21,7 +21,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".CaptureActivity"
+            android:foregroundServiceType="mediaProjection" />
+
         <service android:name=".FloatingViewService" />
+        <service
+            android:name=".CaptureService"
+            android:foregroundServiceType="mediaProjection" />
     </application>
 
 </manifest>

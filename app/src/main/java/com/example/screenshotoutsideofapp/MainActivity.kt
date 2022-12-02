@@ -18,23 +18,26 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val activityIntent = Intent(this, CaptureActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(activityIntent)
         startFloatingViewService()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopFloatingViewService()
+        val floatingServiceIntent = Intent(this, FloatingViewService::class.java)
+            .setAction(FloatingViewService.ACTION_STOP)
+        startService(floatingServiceIntent)
+
+        val captureServiceIntent = Intent(this, CaptureService::class.java)
+            .setAction(CaptureService.ACTION_STOP)
+        startService(captureServiceIntent)
     }
 
     private fun startFloatingViewService() {
-        if (Settings.canDrawOverlays(this)) {
-            val serviceIntent = Intent(this, FloatingViewService::class.java)
-                .setAction(FloatingViewService.ACTION_START)
-            startForegroundService(serviceIntent)
-            FloatingViewService.setOnClickListener {
-                // TODO
-            }
-        } else {
+        if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName")
@@ -42,11 +45,5 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
             launcher.launch(intent)
         }
-    }
-
-    private fun stopFloatingViewService() {
-        val serviceIntent = Intent(this, FloatingViewService::class.java)
-            .setAction(FloatingViewService.ACTION_STOP)
-        startForegroundService(serviceIntent)
     }
 }
